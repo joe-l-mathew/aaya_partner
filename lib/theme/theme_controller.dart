@@ -1,8 +1,7 @@
-import 'package:aaya_partner/theme/colors/dark_colors.dart';
-import 'package:aaya_partner/theme/colors/light_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:aaya_partner/theme/colors/dark_colors.dart';
+import 'package:aaya_partner/theme/colors/light_colors.dart';
 
 class ThemeController extends GetxController {
   RxBool isDarkMode = false.obs;
@@ -15,7 +14,9 @@ class ThemeController extends GetxController {
       disabledColor: LightColors.bottomContainerColor,
       secondaryHeaderColor: LightColors.secondaryColor,
       highlightColor: LightColors.teritioryColor,
-      cardColor: LightColors.bottomNavColor
+      cardColor: LightColors.bottomNavColor,
+      unselectedWidgetColor: LightColors.unselectedColor
+      
       // bottomAppBarColor: LightColors.bottomNavColor
       ,
       dividerColor: LightColors.dividerColor
