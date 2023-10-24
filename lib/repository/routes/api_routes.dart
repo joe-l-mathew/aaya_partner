@@ -3,4 +3,5 @@ class ApiRoutes {
   static const sentOtp = "/verify_phone";
   static const submitOtp = "/verify_otp";
   static const getuser = "/get_worker";
+  static const uploadFile = "/upload_file";
 }
