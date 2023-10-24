@@ -1,3 +1,4 @@
+import 'package:aaya_partner/controller/worker_controller.dart';
 import 'package:aaya_partner/screens/splash/splash_screen.dart';
 import 'package:aaya_partner/services/dio_service.dart';
 import 'package:aaya_partner/theme/theme_controller.dart';
@@ -20,6 +21,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Get.put(WorkerController());
     final ThemeController themeController = Get.put(ThemeController());
     return Obx(() => GetMaterialApp(
           debugShowCheckedModeBanner: false,
