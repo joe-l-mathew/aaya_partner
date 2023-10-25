@@ -8,7 +8,7 @@
 PRODUCT_NAME = aaya_partner
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.aayaPartner
+PRODUCT_BUNDLE_IDENTIFIER = com.aaya.aayaPartner
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2023 com.example. All rights reserved.

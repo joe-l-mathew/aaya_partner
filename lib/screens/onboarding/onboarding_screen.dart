@@ -1,10 +1,12 @@
 import 'package:aaya_partner/constants/enums.dart';
+import 'package:aaya_partner/functions/get_location.dart';
 import 'package:aaya_partner/functions/validate_email_id.dart';
 import 'package:aaya_partner/screens/onboarding/document_verification_screen.dart';
 import 'package:aaya_partner/screens/onboarding/verification_image_screen.dart';
 import 'package:aaya_partner/screens/widgets/aaya_button_widget.dart';
 import 'package:aaya_partner/screens/widgets/aaya_text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
@@ -24,6 +26,16 @@ class _WorkerOnboardingScreenState extends State<WorkerOnboardingScreen> {
   Gender gender = Gender.male;
   XFile? profileImage;
   XFile? verificationImage;
+  Position? position;
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // This function will be called after the build is complete.
+      getCurrentLocation().then((value) => position = value);
+    });
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
