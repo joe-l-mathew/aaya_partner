@@ -30,7 +30,7 @@ class AuthServices {
       TokenServices.saveToken(workerData.token);
       if (workerData.name.isEmpty) {
         //get to add personal details
-        Get.offAll(() =>  WorkerOnboardingScreen());
+        Get.offAll(() => const WorkerOnboardingScreen());
       } else {
         //get to home screen
         Get.offAll(() => const HomeScreen());
@@ -53,7 +53,9 @@ class AuthServices {
       TokenServices.saveToken(workerData.token);
       if (workerData.name.isEmpty) {
         //get to add personal details
-        Get.offAll(() =>  WorkerOnboardingScreen());
+        Get.offAll(
+          () => const WorkerOnboardingScreen(),
+        );
       } else {
         //get to home screen
         Get.offAll(() => const HomeScreen());

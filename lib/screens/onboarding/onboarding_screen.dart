@@ -1,9 +1,11 @@
 import 'package:aaya_partner/constants/enums.dart';
 import 'package:aaya_partner/functions/validate_email_id.dart';
+import 'package:aaya_partner/screens/onboarding/document_verification_screen.dart';
+import 'package:aaya_partner/screens/onboarding/verification_image_screen.dart';
 import 'package:aaya_partner/screens/widgets/aaya_button_widget.dart';
 import 'package:aaya_partner/screens/widgets/aaya_text_field.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class WorkerOnboardingScreen extends StatefulWidget {
@@ -20,6 +22,8 @@ class _WorkerOnboardingScreenState extends State<WorkerOnboardingScreen> {
   int selectedPageNumber = 1;
   DateTime? selectedDOB;
   Gender gender = Gender.male;
+  XFile? profileImage;
+  XFile? verificationImage;
 
   @override
   Widget build(BuildContext context) {
@@ -106,6 +110,12 @@ class _WorkerOnboardingScreenState extends State<WorkerOnboardingScreen> {
           ),
           Expanded(
             child: PageView(
+              physics: const NeverScrollableScrollPhysics(),
+              onPageChanged: (value) {
+                setState(() {
+                  selectedPageNumber = value + 1;
+                });
+              },
               controller: pageController,
               children: [
                 SingleChildScrollView(
@@ -161,16 +171,25 @@ class _WorkerOnboardingScreenState extends State<WorkerOnboardingScreen> {
                                   child: GestureDetector(
                                     onTap: () async {
                                       selectedDOB = await showDatePicker(
-                                          context: context,
-                                          initialDate: DateTime.now().subtract(
-                                            Duration(
-                                                days: (365.25 * 14).toInt()),
-                                          ),
-                                          firstDate: DateTime(1900),
-                                          lastDate: DateTime.now().subtract(
-                                            Duration(
-                                                days: (365.25 * 14).toInt()),
-                                          ));
+                                        context: context,
+                                        initialDate: DateTime.now().subtract(
+                                          Duration(days: (365.25 * 14).toInt()),
+                                        ),
+                                        firstDate: DateTime(1900),
+                                        lastDate: DateTime.now().subtract(
+                                          Duration(days: (365.25 * 14).toInt()),
+                                        ),
+                                        builder: (context, child) {
+                                          return Theme(
+                                            data: Theme.of(context).copyWith(
+                                              colorScheme: ColorScheme.light(
+                                                  primary: Theme.of(context)
+                                                      .primaryColor),
+                                            ),
+                                            child: child!,
+                                          );
+                                        },
+                                      );
                                       setState(() {});
                                     },
                                     child: Container(
@@ -220,82 +239,126 @@ class _WorkerOnboardingScreenState extends State<WorkerOnboardingScreen> {
                                           .secondaryHeaderColor,
                                     ),
                                     child: Center(
-                                        child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Radio(
-                                              value: Gender.male,
-                                              groupValue: gender,
-                                              onChanged: (val) {
-                                                setState(() {
-                                                  gender = val!;
-                                                });
-                                              },
-                                              activeColor: Theme.of(context)
-                                                  .primaryColor,
-                                            ),
-                                            Text(
-                                              "Male",
-                                              style: TextStyle(
-                                                  fontWeight:
-                                                      gender == Gender.male
-                                                          ? FontWeight.bold
-                                                          : null),
-                                            ),
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Radio(
-                                              value: Gender.female,
-                                              groupValue: gender,
-                                              onChanged: (val) {
-                                                setState(() {
-                                                  gender = val!;
-                                                });
-                                              },
-                                              activeColor: Theme.of(context)
-                                                  .primaryColor,
-                                            ),
-                                            Text(
-                                              "Female",
-                                              style: TextStyle(
-                                                  fontWeight:
-                                                      gender == Gender.female
-                                                          ? FontWeight.bold
-                                                          : null),
-                                            ),
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Radio(
-                                              value: Gender.other,
-                                              groupValue: gender,
-                                              onChanged: (val) {
-                                                setState(() {
-                                                  gender = val!;
-                                                });
-                                              },
-                                              activeColor: Theme.of(context)
-                                                  .primaryColor,
-                                            ),
-                                            Text(
-                                              "Other",
-                                              style: TextStyle(
-                                                  fontWeight:
-                                                      gender == Gender.other
-                                                          ? FontWeight.bold
-                                                          : null),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    )),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Radio(
+                                                value: Gender.male,
+                                                groupValue: gender,
+                                                onChanged: (val) {
+                                                  setState(() {
+                                                    gender = val!;
+                                                  });
+                                                },
+                                                activeColor: Theme.of(context)
+                                                    .primaryColor,
+                                              ),
+                                              Text(
+                                                "Male",
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        gender == Gender.male
+                                                            ? FontWeight.bold
+                                                            : null),
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Radio(
+                                                value: Gender.female,
+                                                groupValue: gender,
+                                                onChanged: (val) {
+                                                  setState(() {
+                                                    gender = val!;
+                                                  });
+                                                },
+                                                activeColor: Theme.of(context)
+                                                    .primaryColor,
+                                              ),
+                                              Text(
+                                                "Female",
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        gender == Gender.female
+                                                            ? FontWeight.bold
+                                                            : null),
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Radio(
+                                                value: Gender.other,
+                                                groupValue: gender,
+                                                onChanged: (val) {
+                                                  setState(() {
+                                                    gender = val!;
+                                                  });
+                                                },
+                                                activeColor: Theme.of(context)
+                                                    .primaryColor,
+                                              ),
+                                              Text(
+                                                "Other",
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        gender == Gender.other
+                                                            ? FontWeight.bold
+                                                            : null),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ),
+                                ),
+                                const Padding(
+                                  padding: EdgeInsets.only(
+                                      left: 22, top: 8.0, bottom: 8, right: 22),
+                                  child: Text("Profile Photo"),
+                                ),
+                                Center(
+                                  child: GestureDetector(
+                                    onTap: () async {
+                                      profileImage = await ImagePicker()
+                                          .pickImage(
+                                              source: ImageSource.gallery);
+                                      if (profileImage != null) {
+                                        setState(() {});
+                                      }
+                                    },
+                                    child: Container(
+                                      width: size.width * 0.8,
+                                      height: 55.0,
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(5.0),
+                                        color: Theme.of(context)
+                                            .secondaryHeaderColor,
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          const Icon(Icons.camera_alt),
+                                          const SizedBox(
+                                            width: 20,
+                                          ),
+                                          Text(profileImage != null
+                                              ? "Click to change selected Image"
+                                              : "Click to select your photo")
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 12,
                                 )
                               ],
                             ),
@@ -309,12 +372,34 @@ class _WorkerOnboardingScreenState extends State<WorkerOnboardingScreen> {
                             isValidated: nameController.text.isNotEmpty &&
                                 isEmailValid(emailController.text) &&
                                 selectedDOB != null,
-                            ontap: () {},
+                            ontap: () async {
+                              await pageController.nextPage(
+                                  duration: const Duration(milliseconds: 500),
+                                  curve: Curves.easeIn);
+                              //
+                            },
                             isLoading: false,
                             buttonText: "Next")
                       ],
                     ),
                   ),
+                ),
+                VerficationImageScreen(
+                  onNext: (recievedVerificationImage) {
+                    verificationImage = recievedVerificationImage;
+                    pageController.nextPage(
+                        duration: const Duration(milliseconds: 500),
+                        curve: Curves.easeIn);
+                  },
+                ),
+                DocumentVerificationScreen(
+                  ontap: (
+                      {required aadarBack,
+                      required aadarNo,
+                      required aadharFront,
+                      required panBack,
+                      required panFront,
+                      required panNo}) {},
                 )
               ],
             ),
