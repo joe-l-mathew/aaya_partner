@@ -1,4 +1,5 @@
 import 'package:aaya_partner/controller/worker_controller.dart';
+import 'package:aaya_partner/functions/get_fmc_token.dart';
 import 'package:aaya_partner/main.dart';
 import 'package:aaya_partner/models/api_models/worker_data.dart';
 import 'package:aaya_partner/repository/routes/api_routes.dart';
@@ -46,8 +47,11 @@ class AuthServices {
     Dio dio = dioInstance!;
     String path = ApiRoutes.baseUrl + ApiRoutes.getuser;
     Map<String, String> header = await TokenServices.getHeader();
+    String? fcm = await getFCMToken();
+    var data = {"fcm_token": fcm};
     try {
-      Response res = await dio.get(path, options: Options(headers: header));
+      Response res =
+          await dio.post(path, options: Options(headers: header), data: data);
       WorkerData workerData = WorkerData.fromJson(res.data);
       workerController.userData(workerData);
       TokenServices.saveToken(workerData.token);

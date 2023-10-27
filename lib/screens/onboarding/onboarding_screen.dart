@@ -1,6 +1,7 @@
 import 'package:aaya_partner/constants/enums.dart';
 import 'package:aaya_partner/functions/get_location.dart';
 import 'package:aaya_partner/functions/validate_email_id.dart';
+import 'package:aaya_partner/repository/api_services/onboarding_services.dart';
 import 'package:aaya_partner/screens/onboarding/document_verification_screen.dart';
 import 'package:aaya_partner/screens/onboarding/verification_image_screen.dart';
 import 'package:aaya_partner/screens/widgets/aaya_button_widget.dart';
@@ -385,9 +386,17 @@ class _WorkerOnboardingScreenState extends State<WorkerOnboardingScreen> {
                                 isEmailValid(emailController.text) &&
                                 selectedDOB != null,
                             ontap: () async {
-                              await pageController.nextPage(
-                                  duration: const Duration(milliseconds: 500),
-                                  curve: Curves.easeIn);
+                              OnboardingServices.addBasicData(
+                                  model: BasicDetailModel(
+                                      dob: selectedDOB!,
+                                      email: emailController.text,
+                                      gender: gender,
+                                      latitude: position!.latitude,
+                                      longitude: position!.longitude,
+                                      name: nameController.text));
+                              // await pageController.nextPage(
+                              //     duration: const Duration(milliseconds: 500),
+                              //     curve: Curves.easeIn);
                               //
                             },
                             isLoading: false,

@@ -7,7 +7,8 @@ class WorkerData {
   final String profileURL;
   final String fcmToken;
   final String email;
-  final dynamic jobs; // You may need to replace 'dynamic' with the actual data type.
+  final dynamic
+      jobs; // You may need to replace 'dynamic' with the actual data type.
   final WorkerCurrentLocation workerCurrentLocation;
   final WorkerDetails workerDetails;
   final WorkerVerificationStatus workerVerificationStatus;
@@ -39,10 +40,13 @@ class WorkerData {
       profileURL: json['data']['ProfileURL'],
       fcmToken: json['data']['FCMTocken'],
       email: json['data']['Email'],
-      jobs: json['data']['Jobs'], // Replace 'dynamic' with the actual data type.
-      workerCurrentLocation: WorkerCurrentLocation.fromJson(json['data']['WorkerCurrentLocation']),
+      jobs: json['data']
+          ['Jobs'], // Replace 'dynamic' with the actual data type.
+      workerCurrentLocation:
+          WorkerCurrentLocation.fromJson(json['data']['WorkerCurrentLocation']),
       workerDetails: WorkerDetails.fromJson(json['data']['WorkerDetails']),
-      workerVerificationStatus: WorkerVerificationStatus.fromJson(json['data']['WorkerVerificationStatus']),
+      workerVerificationStatus: WorkerVerificationStatus.fromJson(
+          json['data']['WorkerVerificationStatus']),
       token: json['token'],
     );
   }
@@ -132,11 +136,11 @@ class WorkerVerificationStatus {
   final DateTime createdAt;
   final DateTime updatedAt;
   final int workerID;
-  final bool isAadharVerified;
-  final bool isEmailIdVerified;
-  final bool isImageVerified;
-  final bool isPanVerified;
-  final bool isVerified;
+  final String isAadharVerified;
+  final String isEmailIdVerified;
+  final String isImageVerified;
+  final String isPanVerified;
+  final String isVerified;
 
   WorkerVerificationStatus({
     required this.id,
