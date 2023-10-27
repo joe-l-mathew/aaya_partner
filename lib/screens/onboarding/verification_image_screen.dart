@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:aaya_partner/repository/api_services/onboarding_services.dart';
 import 'package:aaya_partner/screens/widgets/aaya_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -13,6 +14,7 @@ class VerficationImageScreen extends StatefulWidget {
 }
 
 class _VerficationImageScreenState extends State<VerficationImageScreen> {
+  bool isLoading = false;
   XFile? selectedImage;
 
   @override
@@ -123,10 +125,20 @@ class _VerficationImageScreenState extends State<VerficationImageScreen> {
         child: AayaButtonWidget(
             size: size,
             isValidated: selectedImage != null,
-            ontap: () {
-              widget.onNext(selectedImage!);
+            ontap: () async {
+              setState(() {
+                isLoading = true;
+              });
+              bool isSuccess = await OnboardingServices.addVerificationImage(
+                  selectedImage!.path);
+              setState(() {
+                isLoading = false;
+              });
+              if (isSuccess) {
+                widget.onNext(selectedImage!);
+              }
             },
-            isLoading: false,
+            isLoading: isLoading,
             buttonText: "Next"),
       ),
     );

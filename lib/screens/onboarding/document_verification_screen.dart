@@ -1,17 +1,12 @@
 import 'dart:io';
+import 'package:aaya_partner/repository/api_services/onboarding_services.dart';
 import 'package:aaya_partner/screens/widgets/aaya_button_widget.dart';
 import 'package:aaya_partner/screens/widgets/aaya_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class DocumentVerificationScreen extends StatefulWidget {
-  final Function(
-      {required XFile aadharFront,
-      required XFile aadarBack,
-      required XFile panFront,
-      required XFile panBack,
-      required String aadarNo,
-      required String panNo}) ontap;
+  final Function() ontap;
   const DocumentVerificationScreen({super.key, required this.ontap});
 
   @override
@@ -21,6 +16,7 @@ class DocumentVerificationScreen extends StatefulWidget {
 
 class _DocumentVerificationScreenState
     extends State<DocumentVerificationScreen> {
+  bool isLoading = false;
   TextEditingController aadharNoController = TextEditingController();
   TextEditingController panNoController = TextEditingController();
   XFile? aadharFront;
@@ -274,16 +270,28 @@ class _DocumentVerificationScreenState
                       panBack != null &&
                       aadharNoController.text.length == 12 &&
                       panNoController.text.isNotEmpty,
-                  ontap: () {
-                    widget.ontap(
-                        aadarBack: aadarBack!,
-                        aadarNo: aadharNoController.text,
-                        aadharFront: aadharFront!,
-                        panBack: panBack!,
-                        panFront: panFront!,
-                        panNo: panNoController.text);
+                  ontap: () async {
+                    setState(() {
+                      isLoading = true;
+                    });
+                    bool isSuccess = await OnboardingServices.verifyDocuments(
+                        DocumentVerificationModel(
+                      aadharNo: aadharNoController.text,
+                      panNumber: panNoController.text,
+                      aadharFront: aadharFront!.path,
+                      panBack: panBack!.path,
+                      panFront: panFront!.path,
+                      aadharBack: aadarBack!.path,
+                    ));
+                    setState(() {
+                      isLoading = false;
+                    });
+
+                    if (isSuccess) {
+                      widget.ontap();
+                    }
                   },
-                  isLoading: false,
+                  isLoading: isLoading,
                   buttonText: "Submit"),
             ),
             const SizedBox(

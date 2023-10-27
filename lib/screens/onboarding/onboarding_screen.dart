@@ -1,13 +1,16 @@
 import 'package:aaya_partner/constants/enums.dart';
+import 'package:aaya_partner/controller/worker_controller.dart';
 import 'package:aaya_partner/functions/get_location.dart';
 import 'package:aaya_partner/functions/validate_email_id.dart';
 import 'package:aaya_partner/repository/api_services/onboarding_services.dart';
 import 'package:aaya_partner/screens/onboarding/document_verification_screen.dart';
 import 'package:aaya_partner/screens/onboarding/verification_image_screen.dart';
+import 'package:aaya_partner/screens/onboarding/verification_pending_screen.dart';
 import 'package:aaya_partner/screens/widgets/aaya_button_widget.dart';
 import 'package:aaya_partner/screens/widgets/aaya_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
@@ -19,6 +22,7 @@ class WorkerOnboardingScreen extends StatefulWidget {
 }
 
 class _WorkerOnboardingScreenState extends State<WorkerOnboardingScreen> {
+  FocusNode emailFocusNode = FocusNode();
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   PageController pageController = PageController();
@@ -28,11 +32,29 @@ class _WorkerOnboardingScreenState extends State<WorkerOnboardingScreen> {
   XFile? profileImage;
   XFile? verificationImage;
   Position? position;
+  bool isLoading = false;
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // This function will be called after the build is complete.
       getCurrentLocation().then((value) => position = value);
+
+      if (Get.find<WorkerController>()
+          .userData
+          .value!
+          .workerDetails
+          .verificationImage
+          .isNotEmpty) {
+        pageController.animateToPage(2,
+            duration: const Duration(milliseconds: 500), curve: Curves.linear);
+      } else if (Get.find<WorkerController>()
+          .userData
+          .value!
+          .email
+          .isNotEmpty) {
+        pageController.nextPage(
+            duration: const Duration(milliseconds: 500), curve: Curves.linear);
+      }
     });
 
     super.initState();
@@ -162,9 +184,14 @@ class _WorkerOnboardingScreenState extends State<WorkerOnboardingScreen> {
                                   hintText: "Name",
                                   controller: nameController,
                                   inputType: TextInputType.name,
-                                  autoFocous: true,
+                                  autoFocous: Get.find<WorkerController>()
+                                      .userData
+                                      .value!
+                                      .email
+                                      .isEmpty,
                                 ),
                                 AayaTextFromField(
+                                  focusNode: emailFocusNode,
                                   onChanged: (e) {
                                     setState(() {});
                                   },
@@ -173,7 +200,7 @@ class _WorkerOnboardingScreenState extends State<WorkerOnboardingScreen> {
                                   hintText: "Email Id",
                                   controller: emailController,
                                   inputType: TextInputType.emailAddress,
-                                  autoFocous: true,
+                                  autoFocous: false,
                                 ),
                                 const Padding(
                                   padding: EdgeInsets.only(
@@ -183,6 +210,7 @@ class _WorkerOnboardingScreenState extends State<WorkerOnboardingScreen> {
                                 Center(
                                   child: GestureDetector(
                                     onTap: () async {
+                                      emailFocusNode.unfocus();
                                       selectedDOB = await showDatePicker(
                                         context: context,
                                         initialDate: DateTime.now().subtract(
@@ -386,41 +414,52 @@ class _WorkerOnboardingScreenState extends State<WorkerOnboardingScreen> {
                                 isEmailValid(emailController.text) &&
                                 selectedDOB != null,
                             ontap: () async {
-                              OnboardingServices.addBasicData(
-                                  model: BasicDetailModel(
-                                      dob: selectedDOB!,
-                                      email: emailController.text,
-                                      gender: gender,
-                                      latitude: position!.latitude,
-                                      longitude: position!.longitude,
-                                      name: nameController.text));
-                              // await pageController.nextPage(
-                              //     duration: const Duration(milliseconds: 500),
-                              //     curve: Curves.easeIn);
-                              //
+                              String? profileImagePath;
+                              if (profileImage != null) {
+                                profileImagePath = profileImage!.path;
+                              }
+                              setState(() {
+                                isLoading = true;
+                              });
+                              bool isSuccess =
+                                  await OnboardingServices.addBasicData(
+                                model: BasicDetailModel(
+                                    profileImage: profileImagePath,
+                                    dob: selectedDOB!,
+                                    email: emailController.text,
+                                    gender: gender,
+                                    latitude: position!.latitude,
+                                    longitude: position!.longitude,
+                                    name: nameController.text),
+                              );
+                              setState(() {
+                                isLoading = false;
+                              });
+                              if (isSuccess) {
+                                await pageController.nextPage(
+                                    duration: const Duration(milliseconds: 500),
+                                    curve: Curves.easeIn);
+                              }
                             },
-                            isLoading: false,
+                            isLoading: isLoading,
                             buttonText: "Next")
                       ],
                     ),
                   ),
                 ),
                 VerficationImageScreen(
-                  onNext: (recievedVerificationImage) {
-                    verificationImage = recievedVerificationImage;
+                  onNext: (recievedVerificationImage) async {
                     pageController.nextPage(
                         duration: const Duration(milliseconds: 500),
                         curve: Curves.easeIn);
                   },
                 ),
                 DocumentVerificationScreen(
-                  ontap: (
-                      {required aadarBack,
-                      required aadarNo,
-                      required aadharFront,
-                      required panBack,
-                      required panFront,
-                      required panNo}) {},
+                  ontap: () {
+                    Get.offAll(
+                      const VerificationPandingScreen(),
+                    );
+                  },
                 )
               ],
             ),

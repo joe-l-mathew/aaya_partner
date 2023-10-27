@@ -1,3 +1,4 @@
+import 'package:aaya_partner/constants/enums.dart';
 import 'package:aaya_partner/controller/worker_controller.dart';
 import 'package:aaya_partner/functions/get_fmc_token.dart';
 import 'package:aaya_partner/main.dart';
@@ -5,9 +6,11 @@ import 'package:aaya_partner/models/api_models/worker_data.dart';
 import 'package:aaya_partner/repository/routes/api_routes.dart';
 import 'package:aaya_partner/screens/home/home_screen.dart';
 import 'package:aaya_partner/screens/onboarding/onboarding_screen.dart';
+import 'package:aaya_partner/screens/onboarding/verification_pending_screen.dart';
 import 'package:aaya_partner/services/token_services.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart' hide Response;
+import 'package:logger/logger.dart';
 
 class AuthServices {
   static Future<bool> sentOtp({required String phoneNumber}) async {
@@ -55,7 +58,13 @@ class AuthServices {
       WorkerData workerData = WorkerData.fromJson(res.data);
       workerController.userData(workerData);
       TokenServices.saveToken(workerData.token);
-      if (workerData.name.isEmpty) {
+      if (workerData.workerVerificationStatus.isVerified ==
+          VerificationStatus.pending.name) {
+        Get.offAll(
+          const VerificationPandingScreen(),
+        );
+      } else if (workerData.workerVerificationStatus.isVerified !=
+          VerificationStatus.verified.name) {
         //get to add personal details
         Get.offAll(
           () => const WorkerOnboardingScreen(),

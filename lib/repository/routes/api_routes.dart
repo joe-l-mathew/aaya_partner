@@ -5,4 +5,6 @@ class ApiRoutes {
   static const getuser = "/get_worker";
   static const uploadFile = "/upload_file";
   static const basicDetailsUpload = "/update_basic_details";
+  static const uploadVerifiactaionImage = "/update_worker_verification_image";
+  static const addWorkerDocuments = "/add_document_verification";
 }
