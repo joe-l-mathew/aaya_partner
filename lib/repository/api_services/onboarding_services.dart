@@ -16,8 +16,10 @@ class BasicDetailModel {
   final String? profileImage;
   final double longitude;
   final double latitude;
+  final List<String> skills;
   BasicDetailModel({
     required this.name,
+    required this.skills,
     required this.email,
     required this.dob,
     required this.gender,
@@ -34,14 +36,21 @@ class DocumentVerificationModel {
   final String panBack;
   final String aadharFront;
   final String aadharBack;
+  final String? drivingFront;
+  final String? drivingBack;
+  final String? drivingNumber;
 
-  DocumentVerificationModel(
-      {required this.aadharNo,
-      required this.panNumber,
-      required this.panFront,
-      required this.panBack,
-      required this.aadharFront,
-      required this.aadharBack});
+  DocumentVerificationModel({
+    required this.aadharNo,
+    required this.panNumber,
+    required this.panFront,
+    required this.panBack,
+    required this.aadharFront,
+    required this.aadharBack,
+    this.drivingFront,
+    this.drivingBack,
+    this.drivingNumber,
+  });
 }
 
 class OnboardingServices {
@@ -107,7 +116,16 @@ class OnboardingServices {
         filePath: documentVerificationModel.panFront);
     String? panBack = await CommonService.uploadFile(
         filePath: documentVerificationModel.panBack);
-
+    String? drivingFront;
+    String? drivingBack;
+    if (documentVerificationModel.drivingFront != null &&
+        documentVerificationModel.drivingBack != null &&
+        documentVerificationModel.drivingNumber!.isNotEmpty) {
+      drivingFront = await CommonService.uploadFile(
+          filePath: documentVerificationModel.drivingFront!);
+      drivingBack = await CommonService.uploadFile(
+          filePath: documentVerificationModel.drivingBack!);
+    }
     if (aadharFront == null ||
         aadharBack == null ||
         panFront == null ||
@@ -120,7 +138,10 @@ class OnboardingServices {
       "pan_front": panFront,
       "pan_back": panBack,
       "aadhar_front": aadharFront,
-      "aadhar_back": aadharBack
+      "aadhar_back": aadharBack,
+      "driving_number": documentVerificationModel.drivingNumber,
+      "driving_front": drivingFront ?? "",
+      "driving_back": drivingBack ?? ""
     };
 
     try {

@@ -424,6 +424,7 @@ class _WorkerOnboardingScreenState extends State<WorkerOnboardingScreen> {
                               bool isSuccess =
                                   await OnboardingServices.addBasicData(
                                 model: BasicDetailModel(
+                                    skills: [],
                                     profileImage: profileImagePath,
                                     dob: selectedDOB!,
                                     email: emailController.text,
@@ -457,7 +458,7 @@ class _WorkerOnboardingScreenState extends State<WorkerOnboardingScreen> {
                 DocumentVerificationScreen(
                   ontap: () {
                     Get.offAll(
-                      const VerificationPandingScreen(),
+                      const VerificationPendingScreen(),
                     );
                   },
                 )

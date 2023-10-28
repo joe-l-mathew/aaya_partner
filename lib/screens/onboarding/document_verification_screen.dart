@@ -19,12 +19,15 @@ class _DocumentVerificationScreenState
   bool isLoading = false;
   TextEditingController aadharNoController = TextEditingController();
   TextEditingController panNoController = TextEditingController();
+  TextEditingController drivingController = TextEditingController();
   XFile? aadharFront;
   XFile? aadarBack;
   XFile? panFront;
   XFile? panBack;
   String? aadarNo;
   String? panN;
+  XFile? drivingFront;
+  XFile? drivingBack;
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -49,7 +52,7 @@ class _DocumentVerificationScreenState
                       padding:
                           EdgeInsets.only(left: size.width * 0.07, bottom: 12),
                       child: const Text(
-                        "Aadhar Details",
+                        "Aadhar Details *",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -156,7 +159,7 @@ class _DocumentVerificationScreenState
                       padding:
                           EdgeInsets.only(left: size.width * 0.07, bottom: 12),
                       child: const Text(
-                        "Pan Card Details",
+                        "Pan Card Details *",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -252,6 +255,113 @@ class _DocumentVerificationScreenState
                     ),
                     const SizedBox(
                       height: 20,
+                    ),
+                    const Divider(
+                      color: Colors.black,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Padding(
+                      padding:
+                          EdgeInsets.only(left: size.width * 0.07, bottom: 12),
+                      child: const Text(
+                        "Driving License Details (Optional)",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    AayaTextFromField(
+                        onChanged: (e) {
+                          setState(() {});
+                        },
+                        size: size,
+                        hintText: "Enter Driving License ID",
+                        maxLength: 12,
+                        controller: drivingController,
+                        inputType: TextInputType.text,
+                        autoFocous: false),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        GestureDetector(
+                          onTap: () async {
+                            XFile? pickingImage = await ImagePicker()
+                                .pickImage(source: ImageSource.gallery);
+                            if (pickingImage != null) {
+                              drivingFront = pickingImage;
+                              setState(() {});
+                            }
+                          },
+                          child: Container(
+                            width: size.width * 0.35,
+                            height: size.height * 0.08,
+                            decoration: BoxDecoration(
+                              image: drivingFront == null
+                                  ? null
+                                  : DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: FileImage(
+                                        File(drivingFront!.path),
+                                      ),
+                                    ),
+                              borderRadius: BorderRadius.circular(10),
+                              color: Theme.of(context).secondaryHeaderColor,
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                const Icon(Icons.camera_alt_rounded),
+                                Text(drivingFront == null
+                                    ? "Pick Front"
+                                    : "Change Front"),
+                              ],
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () async {
+                            XFile? pickingImage = await ImagePicker()
+                                .pickImage(source: ImageSource.gallery);
+                            if (pickingImage != null) {
+                              drivingBack = pickingImage;
+                              setState(() {});
+                            }
+                          },
+                          child: Container(
+                            width: size.width * 0.35,
+                            height: size.height * 0.08,
+                            decoration: BoxDecoration(
+                              image: drivingBack == null
+                                  ? null
+                                  : DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: FileImage(
+                                        File(drivingBack!.path),
+                                      ),
+                                    ),
+                              borderRadius: BorderRadius.circular(10),
+                              color: Theme.of(context).secondaryHeaderColor,
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                const Icon(Icons.camera_alt_rounded),
+                                Text(drivingBack == null
+                                    ? "Pick Back"
+                                    : "Change Back"),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 20,
                     )
                   ],
                 ),
@@ -276,13 +386,18 @@ class _DocumentVerificationScreenState
                     });
                     bool isSuccess = await OnboardingServices.verifyDocuments(
                         DocumentVerificationModel(
-                      aadharNo: aadharNoController.text,
-                      panNumber: panNoController.text,
-                      aadharFront: aadharFront!.path,
-                      panBack: panBack!.path,
-                      panFront: panFront!.path,
-                      aadharBack: aadarBack!.path,
-                    ));
+                            aadharNo: aadharNoController.text,
+                            panNumber: panNoController.text,
+                            aadharFront: aadharFront!.path,
+                            panBack: panBack!.path,
+                            panFront: panFront!.path,
+                            aadharBack: aadarBack!.path,
+                            drivingNumber: drivingController.text,
+                            drivingBack:
+                                drivingBack != null ? drivingBack!.path : null,
+                            drivingFront: drivingFront != null
+                                ? drivingFront!.path
+                                : null));
                     setState(() {
                       isLoading = false;
                     });

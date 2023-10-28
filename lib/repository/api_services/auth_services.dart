@@ -10,7 +10,6 @@ import 'package:aaya_partner/screens/onboarding/verification_pending_screen.dart
 import 'package:aaya_partner/services/token_services.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart' hide Response;
-import 'package:logger/logger.dart';
 
 class AuthServices {
   static Future<bool> sentOtp({required String phoneNumber}) async {
@@ -32,13 +31,7 @@ class AuthServices {
       WorkerData workerData = WorkerData.fromJson(res.data);
       workerController.userData(workerData);
       TokenServices.saveToken(workerData.token);
-      if (workerData.name.isEmpty) {
-        //get to add personal details
-        Get.offAll(() => const WorkerOnboardingScreen());
-      } else {
-        //get to home screen
-        Get.offAll(() => const HomeScreen());
-      }
+      await AuthServices.getUser();
       return res.statusCode == 200;
     } on Exception {
       return false;
@@ -61,7 +54,7 @@ class AuthServices {
       if (workerData.workerVerificationStatus.isVerified ==
           VerificationStatus.pending.name) {
         Get.offAll(
-          const VerificationPandingScreen(),
+          () => const VerificationPendingScreen(),
         );
       } else if (workerData.workerVerificationStatus.isVerified !=
           VerificationStatus.verified.name) {
