@@ -1,5 +1,5 @@
 class ApiRoutes {
-  static const baseUrl = "http://192.168.1.76:7000/worker";
+  static const baseUrl = "http://192.168.29.206:7000/worker";
   static const sentOtp = "/sent_otp";
   static const submitOtp = "/verify_otp";
   static const getuser = "/get_worker";
